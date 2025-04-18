@@ -1,3 +1,0 @@
-# 常见国内站点直连规则
-DOMAIN-SUFFIX,shsiic.com
-DOMAIN-SUFFIX,lge4.myds.me

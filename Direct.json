@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        "shsiic.com",
+        "lge4.myds.me",
+      ]
+    }
+  ]
+}
