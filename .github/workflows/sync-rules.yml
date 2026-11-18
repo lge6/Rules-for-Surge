@@ -1,0 +1,90 @@
+name: Sync client rules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Direct.list'
+      - 'Proxy.list'
+      - 'surge/**'
+      - 'loon/**'
+      - 'clash/**'
+      - '.rules-sync.json'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/sync-rules.yml'
+  pull_request:
+    paths:
+      - 'Direct.list'
+      - 'Proxy.list'
+      - 'surge/**'
+      - 'loon/**'
+      - 'clash/**'
+      - '.rules-sync.json'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/sync-rules.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rules-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r scripts/requirements.txt
+      - run: python -m unittest discover -s tests -v
+      - name: Validate and preview synchronization
+        run: |
+          python scripts/sync_rules.py
+          python scripts/sync_rules.py --check
+
+  sync:
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TARGET_BRANCH: main
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r scripts/requirements.txt
+      - name: Sync and commit against the latest branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin "$TARGET_BRANCH"
+            git reset --hard FETCH_HEAD
+            python scripts/sync_rules.py
+            python scripts/sync_rules.py --check
+            git add -- Direct.list Proxy.list surge/ loon/ clash/ .rules-sync.json
+            if git diff --cached --quiet; then
+              exit 0
+            fi
+            git commit -m 'chore: sync client rules'
+            if git push origin "HEAD:$TARGET_BRANCH"; then
+              exit 0
+            fi
+            echo "Branch changed during synchronization, retry $attempt/3"
+          done
+          echo 'Could not publish synchronized rules after 3 attempts' >&2
+          exit 1
