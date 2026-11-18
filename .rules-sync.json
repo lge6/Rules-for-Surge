@@ -8,7 +8,8 @@
       "DOMAIN-KEYWORD,ihezu",
       "DOMAIN-SUFFIX,hermes.cn",
       "DOMAIN-SUFFIX,asusrouter.com",
-      "DOMAIN-SUFFIX,xns.one"
+      "DOMAIN-SUFFIX,xns.one",
+      "DOMAIN-KEYWORD,meituan"
     ],
     "Proxy": [
       "DOMAIN-SUFFIX,5bx6h.net",
