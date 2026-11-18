@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "rules": {
+    "Direct": [
+      "DOMAIN-SUFFIX,d4j.cn",
+      "DOMAIN-SUFFIX,topbester.com",
+      "DOMAIN-SUFFIX,ipa.store",
+      "DOMAIN-KEYWORD,ihezu",
+      "DOMAIN-SUFFIX,hermes.cn",
+      "DOMAIN-SUFFIX,asusrouter.com",
+      "DOMAIN-SUFFIX,xns.one"
+    ],
+    "Proxy": [
+      "DOMAIN-SUFFIX,5bx6h.net",
+      "DOMAIN-SUFFIX,browserleaks.com",
+      "DOMAIN-SUFFIX,linkedin.com"
+    ]
+  }
+}
